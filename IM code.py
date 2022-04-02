@@ -40,7 +40,20 @@ def filter_important(str_list) -> list:
         if word in important_words:
             res.append(word)
     return res
-    
+
+## 抽取客户会话数量
+def dialogue_cnt(freq) -> int:
+    if freq > 500:
+        return 50
+    elif freq > 100:
+        return 30
+    elif freq > 50:
+        return 20
+    elif freq > 20:
+        return 10
+    else:
+        return 5   
+
 ## 提取客户原会话
 def process1(string) -> list:
     res = []
@@ -69,6 +82,29 @@ def process3(str_list) -> list:
         res.append(current)
     return res
 
+## 高频词组会话抽取
+def process4(string) -> str:
+    target = string.split()
+    diag_cnt = int(important_phrases_df[important_phrases_df['phrase'] == string]['dialogue_cnt'])
+    res = ''
+    for i in range(len(data['客户消息分词重要词'])):
+        lis = data['客户消息分词重要词'][i]
+        for j in range(len(lis)):
+            words = lis[j]
+            not_contains = False
+            for item in target:
+                if item not in words:
+                    not_contains = True
+            if not_contains == False:
+                diag_cnt -= 1
+                if diag_cnt > 0:
+                    res.append(data['客户消息原会话'][i][j])
+                else:
+                    break
+        if diag_cnt == 0:
+            break
+    return res
+            
 if __name__ == '__main__':
     ## 加载会话数据
     data1 = pd.read_csv('../历史会话_2021年07月01日_2021年09月30日.csv') ## 文件路径
@@ -134,5 +170,13 @@ if __name__ == '__main__':
     dic3_df = dic3_df.sort_values(by='连接数', ascending=False)
     dic3_df.to_excel('../高频词连接数.xlsx') 
 
+    ## 根据高频词组抽取客户会话
+    important_phrases_df = pd.read_excel('../筛选后的高频词组.xlsx') ## 筛过后的高频词组文件
+    important_phrases = important_phrases_df['phrase'].to_list()
+    important_phrases_df['dialogue_cnt'] = important_phrases_df['frequency'].apply(dialogue_cnt)
+    important_phrases_df['content'] = important_phrases_df['phrase'].apply(process4)
+    important_phrases_df.to_excel('../高频词组会话内容.xlsx')
+    
+    
     
                 
