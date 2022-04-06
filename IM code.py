@@ -177,6 +177,99 @@ if __name__ == '__main__':
     important_phrases_df['content'] = important_phrases_df['phrase'].apply(process4)
     important_phrases_df.to_excel('../高频词组会话内容.xlsx')
     
+    ## 根据词性标注表提取原会话
+    labels_df = pd.read_excel('../词性标注.xlsx')
     
+    xiangguan = labels_df[labels_df['是否业务相关'] == 1]['词频>50，中文'].to_list()
+    mingan = labels_df[labels_df['敏感词'] == 1]['词频>50，中文'].to_list()
+    qingxu = labels_df[labels_df['情绪词'] == 1]['词频>50，中文'].to_list()
+    tianqi = labels_df[labels_df['天气词汇'] == 1]['词频>50，中文'].to_list()
+    xingche = labels_df[labels_df['行车或所在场景词'] == 1]['词频>50，中文'].to_list()
+    changjia = labels_df[labels_df['厂家行为词'] == 1]['词频>50，中文'].to_list()
+    yonghu = labels_df[labels_df['用户行为词'] == 1]['词频>50，中文'].to_list()
+    shijian = labels_df[labels_df['时间'] == 1]['词频>50，中文'].to_list()
+    dili = labels_df[labels_df['地理信息'] == 1]['词频>50，中文'].to_list()
+    duixiang = labels_df[labels_df['对象\n人/物/指标'] == 1]['词频>50，中文'].to_list()
+    xianxiang = labels_df[labels_df['现象描述'] == 1]['词频>50，中文'].to_list()
     
-                
+    diag_list = []
+    xiangguan_list = []
+    mingan_list = []
+    qingxu_list = []
+    tianqi_list = []
+    xingche_list = []
+    changjia_list = []
+    yonghu_list = []
+    shijian_list = []
+    dili_list = []
+    duixiang_list = []
+    xianxiang_list = []
+    
+    for i in range(len(data['客户消息分词去除停用词'])):
+        for j in range(len(data['客户消息分词去除停用词'][i])):
+            current = data['客户消息分词去除停用词'][i][j]
+            lis = []
+            xiangguan_contains = False
+            mingan_contains = False
+            qingxu_contains = False
+            for word in current:
+                if word in xiangguan:
+                    xiangguan_contains = True
+                if word in mingan:
+                    mingan_contains = True
+                if word in qingxu:
+                    qingxu_contains = True
+            if xiangguan_contains == True and (mingan_contains == True or qingxu_contains == True):
+                diag_list.append(data['客户消息原会话'][i][j])
+                xiangguan_list.append('')
+                mingan_list.append('')
+                qingxu_list.append('')
+                tianqi_list.append('')
+                xingche_list.append('')
+                changjia_list.append('')
+                yonghu_list.append('')
+                shijian_list.append('')
+                dili_list.append('')
+                duixiang_list.append('')
+                xianxiang_list.append('')
+                for word in current:
+                    if word in xiangguan:
+                        xiangguan_list[-1] += word + ' '
+                    if word in mingan:
+                        mingan_list[-1] += word + ' '
+                    if word in qingxu:
+                        qingxu_list[-1] += word + ' '
+                    if word in tianqi:
+                        tianqi_list[-1] += word + ' '
+                    if word in xingche:
+                        xingche_list[-1] += word + ' '
+                    if word in changjia:
+                        changjia_list[-1] += word + ' '
+                    if word in yonghu:
+                        yonghu_list[-1] += word + ' '
+                    if word in shijian:
+                        shijian_list[-1] += word + ' '
+                    if word in dili:
+                        dili_list[-1] += word + ' '
+                    if word in duixiang:
+                        duixiang_list[-1] += word + ' '
+                    if word in xianxiang:
+                        xianxiang_list[-1] += word + ' '
+    dic4 = {
+    '原会话': diag_list,
+    '业务相关词': xiangguan_list,
+    '敏感词': mingan_list,
+    '情绪词': qingxu_list,
+    '天气词': tianqi_list,
+    '行车或所在场景词': xingche_list,
+    '厂家行为词': changjia_list,
+    '用户行为词': yonghu_list,
+    '时间': shijian_list,
+    '地理信息': dili_list,
+    '对象': duixiang_list,
+    '现象描述': xianxiang_list
+    }
+    
+    dic4_df = pd.DataFrame(dic4)
+    dic4_df.to_excel('../标注词性.xlsx') 
+    
