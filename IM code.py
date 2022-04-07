@@ -192,7 +192,8 @@ if __name__ == '__main__':
     duixiang = labels_df[labels_df['对象\n人/物/指标'] == 1]['词频>50，中文'].to_list()
     xianxiang = labels_df[labels_df['现象描述'] == 1]['词频>50，中文'].to_list()
     
-    diag_list = []
+    diag_id_list = []
+    diag_content_list = []
     xiangguan_list = []
     mingan_list = []
     qingxu_list = []
@@ -204,11 +205,11 @@ if __name__ == '__main__':
     dili_list = []
     duixiang_list = []
     xianxiang_list = []
-    
-    for i in range(len(data['客户消息分词去除停用词'])):
-        for j in range(len(data['客户消息分词去除停用词'][i])):
-            current = data['客户消息分词去除停用词'][i][j]
-            lis = []
+
+    for i in range(len(data1['客户消息分词去除停用词'])):
+        sensitive_contains = False
+        for j in range(len(data1['客户消息分词去除停用词'][i])):
+            current = data1['客户消息分词去除停用词'][i][j]
             xiangguan_contains = False
             mingan_contains = False
             qingxu_contains = False
@@ -220,7 +221,12 @@ if __name__ == '__main__':
                 if word in qingxu:
                     qingxu_contains = True
             if xiangguan_contains == True and (mingan_contains == True or qingxu_contains == True):
-                diag_list.append(data['客户消息原会话'][i][j])
+                sensitive_contains = True
+        if sensitive_contains == True:
+            for j in range(len(data1['客户消息分词去除停用词'][i])):
+                current = data1['客户消息分词去除停用词'][i][j]
+                diag_id_list.append(data1['会话ID'][i])
+                diag_content_list.append(data1['客户消息原会话'][i][j])
                 xiangguan_list.append('')
                 mingan_list.append('')
                 qingxu_list.append('')
@@ -255,8 +261,12 @@ if __name__ == '__main__':
                         duixiang_list[-1] += word + ' '
                     if word in xianxiang:
                         xianxiang_list[-1] += word + ' '
+        else:
+            continue
+    
     dic4 = {
-    '原会话': diag_list,
+    '会话id': diag_id_list,
+    '原会话': diag_content_list,
     '业务相关词': xiangguan_list,
     '敏感词': mingan_list,
     '情绪词': qingxu_list,
@@ -271,5 +281,9 @@ if __name__ == '__main__':
     }
     
     dic4_df = pd.DataFrame(dic4)
-    dic4_df.to_excel('../标注词性.xlsx') 
+    dic4_df.to_excel('../标注词性.xlsx')
     
+                    
+                
+    
+                
