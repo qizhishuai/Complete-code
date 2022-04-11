@@ -51,8 +51,10 @@ def dialogue_cnt(freq) -> int:
         return 20
     elif freq > 20:
         return 10
+    elif freq > 10:
+        return 5
     else:
-        return 5   
+        return 3
 
 ## 提取客户原会话
 def process1(string) -> list:
