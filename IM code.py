@@ -85,20 +85,20 @@ def process3(str_list) -> list:
 ## 高频词组会话抽取
 def process4(string) -> str:
     target = string.split()
-    diag_cnt = int(important_phrases_df[important_phrases_df['phrase'] == string]['dialogue_cnt'])
     res = ''
+    diag_cnt = int(important_phrases_df[important_phrases_df['word_list'] == string]['dialogue_cnt'])
     for i in range(len(data['客户消息分词重要词'])):
-        lis = data['客户消息分词重要词'][i]
+        lis = data['客户消息分词重要词'].iloc[i]
         for j in range(len(lis)):
-            words = lis[j]
-            not_contains = False
-            for item in target:
-                if item not in words:
-                    not_contains = True
-            if not_contains == False:
-                diag_cnt -= 1
+            current = lis[j]
+            contains = True
+            for word in target:
+                if word not in current:
+                    contains = False
+            if contains == True:
                 if diag_cnt > 0:
-                    res.append(data['客户消息原会话'][i][j])
+                    res += data['客户消息原会话'].iloc[i][j] + '\n'
+                    diag_cnt -= 1
                 else:
                     break
         if diag_cnt == 0:
@@ -172,9 +172,9 @@ if __name__ == '__main__':
 
     ## 根据高频词组抽取客户会话
     important_phrases_df = pd.read_excel('../筛选后的高频词组.xlsx') ## 筛过后的高频词组文件
-    important_phrases = important_phrases_df['phrase'].to_list()
+    important_phrases = important_phrases_df['word_list'].to_list()
     important_phrases_df['dialogue_cnt'] = important_phrases_df['frequency'].apply(dialogue_cnt)
-    important_phrases_df['content'] = important_phrases_df['phrase'].apply(process4)
+    important_phrases_df['content'] = important_phrases_df['word_list'].apply(process4)
     important_phrases_df.to_excel('../高频词组会话内容.xlsx')
     
     ## 根据词性标注表提取原会话
