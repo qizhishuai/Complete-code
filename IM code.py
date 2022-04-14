@@ -58,40 +58,40 @@ def dialogue_cnt(freq) -> int:
         return 3   
 
 ## 会话是否已被提取
-def is_extracted(lis):
+def is_extracted(lis) -> list:
     return list(np.zeros_like(lis))
 
 ## level1 词
-def first_word(string):
+def first_word(string) -> str:
     return string.split()[0]
 
 ## level2 词
-def second_word(string):
+def second_word(string) -> str:
     return string.split()[1]
 
 ## level3 词
-def third_word(string):
+def third_word(string) -> str:
     if len(string.split()) < 3:
         return ''
     else:
         return string.split()[2]
 
 ## level4 词
-def fourth_word(string):
+def fourth_word(string) -> str:
     if len(string.split()) < 4:
         return ''
     else:
         return string.split()[3]   
 
 ## level5 词
-def fifth_word(string):
+def fifth_word(string) -> str:
     if len(string.split()) < 5:
         return ''
     else:
         return string.split()[4]       
 
 ## level6 词
-def sixth_word(string):
+def sixth_word(string) -> str:
     if len(string.split()) < 6:
         return ''
     else:
@@ -461,19 +461,18 @@ if __name__ == '__main__':
     'frequency': frequency,
     'length': length
     }
-    dic6_df = pd.DataFrame(dic6)
-    
+    dic6_df = pd.DataFrame(dic6) 
     dic6_df['level1'] = dic6_df['word_list'].apply(first_word)
     dic6_df['level2'] = dic6_df['word_list'].apply(second_word)
     dic6_df['level3'] = dic6_df['word_list'].apply(third_word)
     dic6_df['level4'] = dic6_df['word_list'].apply(fourth_word)
     dic6_df['level5'] = dic6_df['word_list'].apply(fifth_word)
-    dic6_df['level6'] = dic6_df['word_list'].apply(sixth_word)
-    
+    dic6_df['level6'] = dic6_df['word_list'].apply(sixth_word)    
     dic6_df.to_excel('../高频词组结构化.xlsx')
 
     ## 结构化高频词组抽取原会话
     dic6_df['dialogue_cnt'] = dic6_df['frequency'].apply(dialogue_cnt) 
     data['是否已抽取'] = data['客户消息原会话'].apply(is_extracted)
     is_extracted = list(data['是否已抽取'])
-    dic6_df['content'] =  dic6_df['word_list'].apply(process4)
+    dic6_df['content'] =  dic6_df['word_list'].apply(process4) 
+    dic6_df.to_excel('../高频词组结构化抽取原会话.xlsx')
