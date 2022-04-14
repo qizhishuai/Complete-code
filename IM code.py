@@ -476,3 +476,6 @@ if __name__ == '__main__':
     is_extracted = list(data['是否已抽取'])
     dic6_df['content'] =  dic6_df['word_list'].apply(process4) 
     dic6_df.to_excel('../高频词组结构化抽取原会话.xlsx')
+    
+    
+    
