@@ -15,12 +15,12 @@ import jieba
 ## 数据处理
 
 ## 筛选客户消息
-def start_with_alpha_or_digit(string) -> bool:
-    return (ord(string[0]) >= 48 and ord(string[0]) <= 57) or (ord(string[0]) >= 65 and ord(string[0]) <= 90) or (ord(string[0]) >= 97 and ord(string[0]) <= 122)
+def start_with_alpha_or_digit(string) -> bool: ## 以字母或者数字开头
+    return (ord(string[0]) >= 48 and ord(string[0]) <= 57) or (ord(string[0]) >= 65 and ord(string[0]) <= 90) or (ord(string[0]) >= 97 and ord(string[0]) <= 122) 
 
 ## 提取中文
-def find_chinese(string) -> str:
-    return ''.join(re.findall(r'[\u4e00-\u9fa5]', string))
+def find_chinese(string) -> str: ## 只提取中文，去掉原会话里网页链接和表情符号，但也会去掉一些数字/英文信息
+    return ''.join(re.findall(r'[\u4e00-\u9fa5]', string)) 
 
 ## 分词
 def segment(string) -> list:
@@ -35,12 +35,12 @@ def remove_stopwords(str_list) -> list:
     return res
 
 ## 筛选重要词
-def filter_important(str_list) -> list:
+def filter_important(str_list) -> list: ## 筛选出来业务相关的词
     res = []
     for word in str_list:
         if word in important_words:
             res.append(word)
-    return res
+    return res 
 
 ## 抽取客户会话数量
 def dialogue_cnt(freq) -> int:
@@ -58,12 +58,12 @@ def dialogue_cnt(freq) -> int:
         return 3   
 
 ## 会话是否已被提取
-def is_extracted(lis) -> list:
+def is_extracted(lis) -> list: ## 未防止会话被提取多次，创建数组存储会话是否已被提取过
     return list(np.zeros_like(lis))
 
 ## level1 词
-def first_word(string) -> str:
-    return string.split()[0]
+def first_word(string) -> str: ## 高频词组结构化level1词
+    return string.split()[0] 
 
 ## level2 词
 def second_word(string) -> str:
@@ -127,7 +127,7 @@ def process3(str_list) -> list:
 ## 高频词组会话抽取
 def process4(string) -> str:
     target = string.split()
-    target_str1 = ''.join(target) ## 去除二元组与原会话相同的情况
+    target_str1 = ''.join(target) ## 去除词组与原会话相同的情况，比如词组是预约保养，会话也是预约保养/保养预约
     target_str2 = ''.join(list(reversed(target)))
     res = ''
     diag_cnt = int(dic1_df[dic1_df['word_list'] == string]['dialogue_cnt'])
@@ -156,7 +156,7 @@ def process4(string) -> str:
     return res
 
 ## 高频词组重新排序
-def process5(string) -> str:
+def process5(string) -> str: ## 对高频词组中的词按出现的次数排序
     lis = string.split()
     res = ''
     for key in keys:
@@ -220,7 +220,7 @@ if __name__ == '__main__':
     dic2_df.columns = ['word_list', 'frequency', 'len']
     dic2_df.to_excel('../高频词组.xlsx')                 
     
-    ## 连接词数
+    ## 连接词数（未用到）
     word_set = [set() for i in range(len(important_words))]
     dic3 = dict(zip(important_words, word_set))
     for lis in data['客户消息分词重要词']:
@@ -368,7 +368,7 @@ if __name__ == '__main__':
     important_phrases_df['sorted_word_list'] = important_phrases_df['word_list'].apply(process5)
     
     ## 高频词组结构化
-    important_phrases_df_2 = important_phrases_df[important_phrases_df['len'] == 2] 
+    important_phrases_df_2 = important_phrases_df[important_phrases_df['len'] == 2] ## 只取词数<=6的词组，太长的词组直接去掉
     important_phrases_df_3 = important_phrases_df[important_phrases_df['len'] == 3] 
     important_phrases_df_4 = important_phrases_df[important_phrases_df['len'] == 4] 
     important_phrases_df_5 = important_phrases_df[important_phrases_df['len'] == 5] 
@@ -382,7 +382,7 @@ if __name__ == '__main__':
     is_selected5 = [0 for i in range(len(important_phrases_df_5))]
     is_selected6 = [0 for i in range(len(important_phrases_df_6))]     
     
-    for i in range(len(important_phrases_df_2)):
+    for i in range(len(important_phrases_df_2)): ## 结构化写iterations
         wl2 = important_phrases_df_2.iloc[i]['sorted_word_list']
         wl2_list = wl2.split()
         freq2 = important_phrases_df_2.iloc[i]['frequency']
